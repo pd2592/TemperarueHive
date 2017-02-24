@@ -1,0 +1,57 @@
+create database custom;
+
+use custom;
+
+set hive.cli.print.current.db=true;
+
+create table if not exists temperature_data(date string, zipcode int, temperature int) row format delimited fields terminated by ',' lines terminated by '\n' stored as textfile ;
+
+load data local inpath '/home/acadgild/hive/dataset_Session 14 (1).txt' into table temperature_data;
+
+select cast(substring(from_unixtime(unix_timestamp(date, 'dd-MM-yyyy')),1,10) as date) from temperature_data;
+
+1.
+
+select date, temperature from temperature_data where zipcode>300000 and zipcode<399999;
+
+
+---------------------------------------------------------------------------------------------
+
+2.
+
+select MAX(temperature), YEAR(cast(substring(from_unixtime(unix_timestamp(date, 'dd-MM-yyyy')),1,10) as date)) from temperature_data group by YEAR(cast(substring(from_unixtime(unix_timestamp(date, 'dd-MM-yyyy')),1,10) as date));
+
+
+---------------------------------------------------------------------------------------------
+
+3. 
+
+select MAX(temperature), YEAR(cast(substring(from_unixtime(unix_timestamp(date, 'dd-MM-yyyy')),1,10) as date)) from temperature_data group by YEAR(cast(substring(from_unixtime(unix_timestamp(date, 'dd-MM-yyyy')),1,10) as date)) HAVING COUNT(temperature)>=2;
+
+
+--------------------------------------------------------------------------------------------
+
+4.
+
+CREATE VIEW temperature_data_vw AS select MAX(temperature), YEAR(cast(substring(from_unixtime(unix_timestamp(date, 'dd-MM-yyyy')),1,10) as date)) from temperature_data group by YEAR(cast(substring(from_unixtime(unix_timestamp(date, 'dd-MM-yyyy')),1,10) as date)) HAVING COUNT(temperature)>=2;
+
+
+--------------------------------------------------------------------------------------------
+
+
+5.
+
+INSERT OVERWRITE LOCAL DIRECTORY '/home/acadgild/hive' 
+ROW FORMAT DELIMITED 
+FIELDS TERMINATED BY '|' 
+Select * from temperature_data_vw;
+
+
+
+
+
+
+
+
+
+

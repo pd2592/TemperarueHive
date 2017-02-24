@@ -1,0 +1,10 @@
+create database custom;
+
+use custom;
+
+set hive.cli.print.current.db=true;
+
+create table if not exists temperature_data(date string, zipcode int, temperature int) row format delimited fields terminated by ',' lines terminated by '\n' stored as textfile ;
+
+load data local inpath 'dataset_Session.txt' into table temperature_data;
+
